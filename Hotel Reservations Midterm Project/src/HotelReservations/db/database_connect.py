@@ -2,8 +2,7 @@ import sqlalchemy
 import pandas as pd
 import logging
 from sqlalchemy.orm import sessionmaker
-
-import db_info  #this file has the dbinfo:server,db,etc.
+from . import db_info  #this file has the dbinfo:server,db,etc.
 #This class is to connect to the database
 class DbCon:
     def __init__(self):

@@ -1,32 +1,44 @@
-Index(['hotel', 'is_canceled', 'lead_time', 'arrival_date_week_number',
-       'stays_in_weekend_nights', 'stays_in_week_nights', 'adults', 'children',
-       'babies', 'meal', 'country', 'market_segment', 'distribution_channel',
-       'is_repeated_guest', 'previous_cancellations',
-       'previous_bookings_not_canceled', 'reserved_room_type',
-       'assigned_room_type', 'booking_changes', 'deposit_type', 'agent',
-       'company', 'days_in_waiting_list', 'customer_type', 'adr',
-       'required_car_parking_spaces', 'total_of_special_requests',
-       'reservation_status', 'reservation_status_date', 'arrival_date',
-       'direct_booking'],
+
 
 	   --a)
-	   --Select TOP 1 agent from df
-	   --WHERE country == 'United States'
-	   --GROUP BY country
-	   --ORDER BY agent desc
+	  
 
 	   Select TOP 10 r.* , g.* from Reservation r
-	   LEFT JOIN Guest g ON r.guest_id = g.guest_id 
-	   -- this join doesn't seem great, 1 guest can be on multiple reservations, then what? 
-	   WHERE country == 'United States'
-	   GROUP BY country
-	   ORDER BY agent desc
+	   LEFT JOIN Guest g ON r.GuestId = g.GuestId 
+	   WHERE country = 'PRT'
+	   and agent = (
+			Select TOP 1 agent  from Reservation as r
+				LEFT JOIN Guest g ON r.GuestId = g.GuestId
+			WHERE country = 'PRT'
+			GROUP BY agent
+			ORDER BY count(*) desc
+	   )
 
 	   --b)
 	   SELECT r.* , g.* FROM Reservation r 
-	   LEFT JOIN Guest g ON r.guest_id = g.guest_id
-	   WHERE reservation_status_date LIKE '%2019'
-		AND adr BETWEEN 75 AND 120
-		AND reservation_status != 'canceled'
+	   LEFT JOIN Guest g ON r.GuestId = g.GuestId
+	   WHERE year(reservation_status_date) = '2015'
+		AND adr BETWEEN 25 AND 120
+		AND reservation_status != 'Canceled'
 
-	   
+	--c)
+
+	
+	SELECT
+		TOP 1  YEAR(reservation_status_date),
+		CASE
+			WHEN agent > 0 THEN 'agent'
+			WHEN company > 0 THEN 'company'
+			WHEN direct_booking = 'yes' THEN 'directly'
+			ELSE 'None of the above'
+		END
+	FROM Reservation
+	WHERE YEAR(reservation_status_date) = 
+		(SELECT TOP 1  YEAR(reservation_status_date) from Reservation 
+		WHERE reservation_status = 'canceled'
+		GROUP BY year(reservation_status_date)
+		ORDER BY count(reservation_status) DESC )
+
+
+
+

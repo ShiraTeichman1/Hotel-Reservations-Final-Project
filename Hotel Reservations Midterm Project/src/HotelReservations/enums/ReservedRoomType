@@ -1,0 +1,13 @@
+from enum import Enum
+
+class ReservedRoomType(Enum):
+    C = 1
+    A = 2
+    D = 3
+    E = 4
+    G = 5
+    F = 6
+    H = 7
+    L = 8
+    P = 9
+    B = 10
